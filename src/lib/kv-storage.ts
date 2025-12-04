@@ -138,12 +138,25 @@ export async function getMusicSamplesFromRedis() {
   try {
     const data = await client.get(MUSIC_SAMPLES_KEY)
     if (data) {
+      console.log('Raw data from Redis:', typeof data, data)
+      // If data is corrupted, clear it and return empty
+      if (data === '[object Object]' || typeof data === 'object') {
+        console.log('Corrupted data detected, clearing...')
+        await client.del(MUSIC_SAMPLES_KEY)
+        return []
+      }
       const parsed = JSON.parse(data as string)
       return parsed.samples || []
     }
     return []
   } catch (error) {
     console.error('Error getting music samples from Redis:', error)
+    // Clear corrupted data
+    try {
+      await client.del(MUSIC_SAMPLES_KEY)
+    } catch (clearError) {
+      console.error('Error clearing corrupted data:', clearError)
+    }
     return []
   }
 }
@@ -190,9 +203,24 @@ export async function getShowsFromRedis() {
 
   try {
     const shows = await client.get(SHOWS_KEY)
-    return shows ? JSON.parse(shows as string) : []
+    if (shows) {
+      // If data is corrupted, clear it and return empty
+      if (shows === '[object Object]' || typeof shows === 'object') {
+        console.log('Corrupted shows data detected, clearing...')
+        await client.del(SHOWS_KEY)
+        return []
+      }
+      return JSON.parse(shows as string)
+    }
+    return []
   } catch (error) {
     console.error('Error getting shows from Redis:', error)
+    // Clear corrupted data
+    try {
+      await client.del(SHOWS_KEY)
+    } catch (clearError) {
+      console.error('Error clearing corrupted shows data:', clearError)
+    }
     return []
   }
 }
