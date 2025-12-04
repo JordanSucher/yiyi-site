@@ -11,11 +11,11 @@ export default function About() {
       <div className="ritual-symbol symbol-2">⚘</div>
       <div className="ritual-symbol symbol-3">✺</div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem', position: 'relative', zIndex: 2 }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(1rem, 4vw, 2rem)', position: 'relative', zIndex: 2 }}>
         {/* Header Navigation */}
         <header
           style={{
-            padding: '4rem 0 3rem',
+            padding: 'clamp(2rem, 6vw, 4rem) 0 clamp(1.5rem, 4vw, 3rem)',
             textAlign: 'center'
           }}
         >
@@ -37,7 +37,7 @@ export default function About() {
             </Link>
           </div>
           <nav style={{ marginBottom: '3rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(1.5rem, 4vw, 3rem)', flexWrap: 'wrap' }}>
               <Link
                 href="/"
                 className="nav-link"
@@ -78,7 +78,7 @@ export default function About() {
           >
             <span style={{
               position: 'absolute',
-              left: '-2.5rem',
+              left: 'clamp(-1.5rem, -5vw, -2.5rem)',
               color: 'var(--ember)',
               fontSize: '0.5em',
               top: '50%',
@@ -88,7 +88,7 @@ export default function About() {
             {settings.site.aboutTitle}
             <span style={{
               position: 'absolute',
-              right: '-2.5rem',
+              right: 'clamp(-1.5rem, -5vw, -2.5rem)',
               color: 'var(--ember)',
               fontSize: '0.5em',
               top: '50%',
@@ -109,7 +109,7 @@ export default function About() {
             style={{
               maxWidth: '800px',
               margin: '0 auto',
-              padding: '5rem 4rem',
+              padding: 'clamp(2rem, 6vw, 5rem) clamp(1rem, 6vw, 4rem)',
               borderTop: '2px solid var(--moss)',
               borderBottom: '2px solid var(--moss)',
               position: 'relative',
@@ -139,7 +139,7 @@ export default function About() {
             {/* Side decorations */}
             <div style={{
               position: 'absolute',
-              left: '-2rem',
+              left: 'clamp(-1rem, -4vw, -2rem)',
               top: '50%',
               transform: 'translateY(-50%)',
               color: 'var(--moss)',
@@ -149,7 +149,7 @@ export default function About() {
             }}>◈</div>
             <div style={{
               position: 'absolute',
-              right: '-2rem',
+              right: 'clamp(-1rem, -4vw, -2rem)',
               top: '50%',
               transform: 'translateY(-50%)',
               color: 'var(--moss)',

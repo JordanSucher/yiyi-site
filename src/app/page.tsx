@@ -58,7 +58,7 @@ export default async function Home() {
 
   return (
     <>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem', position: 'relative', zIndex: 2 }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(1rem, 4vw, 2rem)', position: 'relative', zIndex: 2 }}>
 
         {/* Hero Section - Fire Ritual */}
         <section
@@ -73,46 +73,46 @@ export default async function Home() {
               position: 'relative',
               maxWidth: '800px',
               margin: '0 auto',
-              padding: '5rem 3rem',
+              padding: 'clamp(2rem, 8vw, 5rem) clamp(1rem, 6vw, 3rem)',
               textAlign: 'center'
             }}
           >
             {/* Ornate corner decorations */}
             <div style={{
               position: 'absolute',
-              top: '2rem',
-              left: '2rem',
+              top: 'clamp(1rem, 4vw, 2rem)',
+              left: 'clamp(1rem, 4vw, 2rem)',
               color: 'var(--copper)',
-              fontSize: '2rem',
+              fontSize: 'clamp(1.2rem, 3vw, 2rem)',
               opacity: 0.4,
-              animation: 'flicker 5s ease-in-out infinite'
+              animation: 'flicker 5s ease-in-out infinite',
             }}>◈</div>
             <div style={{
               position: 'absolute',
-              top: '2rem',
-              right: '2rem',
+              top: 'clamp(1rem, 4vw, 2rem)',
+              right: 'clamp(1rem, 4vw, 2rem)',
               color: 'var(--sage)',
-              fontSize: '1.6rem',
+              fontSize: 'clamp(1rem, 2.5vw, 1.6rem)',
               opacity: 0.3,
-              animation: 'flicker 7s ease-in-out infinite 2s'
+              animation: 'flicker 7s ease-in-out infinite 2s',
             }}>⟐</div>
             <div style={{
               position: 'absolute',
-              bottom: '2rem',
-              left: '2rem',
+              bottom: 'clamp(1rem, 4vw, 2rem)',
+              left: 'clamp(1rem, 4vw, 2rem)',
               color: 'var(--wine)',
-              fontSize: '1.8rem',
+              fontSize: 'clamp(1.1rem, 2.8vw, 1.8rem)',
               opacity: 0.35,
-              animation: 'flicker 6s ease-in-out infinite 1s'
+              animation: 'flicker 6s ease-in-out infinite 1s',
             }}>⟢</div>
             <div style={{
               position: 'absolute',
-              bottom: '2rem',
-              right: '2rem',
+              bottom: 'clamp(1rem, 4vw, 2rem)',
+              right: 'clamp(1rem, 4vw, 2rem)',
               color: 'var(--ember)',
-              fontSize: '1.4rem',
+              fontSize: 'clamp(0.9rem, 2.2vw, 1.4rem)',
               opacity: 0.4,
-              animation: 'flicker 4s ease-in-out infinite 3s'
+              animation: 'flicker 4s ease-in-out infinite 3s',
             }}>◉</div>
 
             <h2
@@ -165,7 +165,7 @@ export default async function Home() {
             >
               <span style={{
                 position: 'absolute',
-                left: '-3rem',
+                left: 'clamp(-2rem, -6vw, -3rem)',
                 color: 'var(--copper)',
                 fontSize: '0.6em',
                 top: '50%',
@@ -174,7 +174,7 @@ export default async function Home() {
               }}>◈</span>
               <span style={{
                 position: 'absolute',
-                left: '-4.5rem',
+                left: 'clamp(-3rem, -8vw, -4.5rem)',
                 color: 'var(--sage)',
                 fontSize: '0.4em',
                 top: '50%',
@@ -184,7 +184,7 @@ export default async function Home() {
               {settings.site.showsTitle}
               <span style={{
                 position: 'absolute',
-                right: '-3rem',
+                right: 'clamp(-2rem, -6vw, -3rem)',
                 color: 'var(--copper)',
                 fontSize: '0.6em',
                 top: '50%',
@@ -193,7 +193,7 @@ export default async function Home() {
               }}>◈</span>
               <span style={{
                 position: 'absolute',
-                right: '-4.5rem',
+                right: 'clamp(-3rem, -8vw, -4.5rem)',
                 color: 'var(--sage)',
                 fontSize: '0.4em',
                 top: '50%',
@@ -204,8 +204,8 @@ export default async function Home() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: '3rem',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                gap: 'clamp(1.5rem, 4vw, 3rem)',
                 maxWidth: '900px',
                 margin: '0 auto'
               }}
@@ -215,23 +215,23 @@ export default async function Home() {
                   key={show.slug}
                   className="show-card"
                   style={{
-                    padding: '1.5rem'
+                    padding: 'clamp(1rem, 3vw, 1.5rem)'
                   }}
                 >
                   <span style={{
                     position: 'absolute',
-                    top: '1.5rem',
-                    right: '1.5rem',
+                    top: 'clamp(1rem, 3vw, 1.5rem)',
+                    right: 'clamp(1rem, 3vw, 1.5rem)',
                     color: 'var(--copper)',
-                    fontSize: '1.4rem',
+                    fontSize: 'clamp(1rem, 2.5vw, 1.4rem)',
                     opacity: 0.6
                   }}>◈</span>
                   <span style={{
                     position: 'absolute',
-                    top: '1rem',
-                    right: '2.5rem',
+                    top: 'clamp(0.7rem, 2.5vw, 1rem)',
+                    right: 'clamp(1.8rem, 4vw, 2.5rem)',
                     color: 'var(--sage)',
-                    fontSize: '0.8rem',
+                    fontSize: 'clamp(0.6rem, 1.8vw, 0.8rem)',
                     opacity: 0.4
                   }}>⟐</span>
                   <span

@@ -53,7 +53,7 @@ export default function Music() {
 
   return (
     <>
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 2rem', position: 'relative', zIndex: 2 }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 clamp(1rem, 4vw, 2rem)', position: 'relative', zIndex: 2 }}>
 
         {/* Music Samples Section */}
         <section style={{ marginBottom: '4rem' }}>
@@ -70,7 +70,7 @@ export default function Music() {
           >
             <span style={{
               position: 'absolute',
-              left: '-2rem',
+              left: 'clamp(-1rem, -4vw, -2rem)',
               color: 'var(--copper)',
               fontSize: '0.6em',
               top: '50%',
@@ -80,7 +80,7 @@ export default function Music() {
             Music
             <span style={{
               position: 'absolute',
-              right: '-2rem',
+              right: 'clamp(-1rem, -4vw, -2rem)',
               color: 'var(--copper)',
               fontSize: '0.6em',
               top: '50%',
@@ -91,7 +91,7 @@ export default function Music() {
 
           <div style={{
             display: 'grid',
-            gap: '3rem',
+            gap: 'clamp(1.5rem, 4vw, 3rem)',
             maxWidth: '800px',
             margin: '0 auto'
           }}>
@@ -100,14 +100,14 @@ export default function Music() {
                 key={sample.id || `music-sample-${index}`}
                 className="show-card"
                 style={{
-                  padding: '2.5rem',
+                  padding: 'clamp(1.5rem, 4vw, 2.5rem)',
                   position: 'relative'
                 }}
               >
                 <span style={{
                   position: 'absolute',
-                  top: '1.5rem',
-                  right: '1.5rem',
+                  top: 'clamp(1rem, 3vw, 1.5rem)',
+                  right: 'clamp(1rem, 3vw, 1.5rem)',
                   color: 'var(--copper)',
                   fontSize: '1.4rem',
                   opacity: 0.6
@@ -116,7 +116,7 @@ export default function Music() {
                 <h3
                   style={{
                     fontFamily: 'Libre Baskerville, serif',
-                    fontSize: '1.8rem',
+                    fontSize: 'clamp(1.3rem, 3.5vw, 1.8rem)',
                     fontWeight: 600,
                     marginBottom: '1rem',
                     color: 'var(--moonlight)'
@@ -169,8 +169,8 @@ export default function Music() {
                       rel="noopener noreferrer"
                       className="ticket-button"
                       style={{
-                        fontSize: '0.9rem',
-                        padding: '0.6rem 1.2rem'
+                        fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
+                        padding: 'clamp(0.5rem, 1.5vw, 0.6rem) clamp(1rem, 2.5vw, 1.2rem)'
                       }}
                     >
                       Listen on SoundCloud
@@ -186,8 +186,8 @@ export default function Music() {
                       rel="noopener noreferrer"
                       className="ticket-button"
                       style={{
-                        fontSize: '0.9rem',
-                        padding: '0.6rem 1.2rem'
+                        fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
+                        padding: 'clamp(0.5rem, 1.5vw, 0.6rem) clamp(1rem, 2.5vw, 1.2rem)'
                       }}
                     >
                       {sample.linkText || 'View'}

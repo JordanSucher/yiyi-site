@@ -66,15 +66,15 @@ export default async function Shows() {
       <div
         className={`${isPast ? 'past-show-card' : 'show-card'}`}
         style={{
-          padding: '1.5rem'
+          padding: 'clamp(1rem, 3vw, 1.5rem)'
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 'clamp(0.75rem, 2vw, 1rem)', flexWrap: 'wrap', gap: '0.5rem' }}>
           <div>
             <span
               style={{
                 fontFamily: 'Libre Baskerville, serif',
-                fontSize: '1.8rem',
+                fontSize: 'clamp(1.3rem, 3.5vw, 1.8rem)',
                 fontWeight: 700,
                 color: 'var(--copper)',
                 display: 'block',
@@ -85,7 +85,7 @@ export default async function Shows() {
             </span>
             <h3
               style={{
-                fontSize: '1.4rem',
+                fontSize: 'clamp(1.1rem, 2.8vw, 1.4rem)',
                 fontWeight: 600,
                 marginBottom: '0.5rem',
                 color: 'var(--moonlight)'
@@ -96,7 +96,7 @@ export default async function Shows() {
           </div>
           <span style={{
             color: 'var(--sage)',
-            fontSize: '1.2rem',
+            fontSize: 'clamp(1rem, 2.4vw, 1.2rem)',
             opacity: 0.6
           }}>◈</span>
         </div>
@@ -104,7 +104,7 @@ export default async function Shows() {
         <div style={{ marginBottom: '1.5rem' }}>
           <div
             style={{
-              fontSize: '1.2rem',
+              fontSize: 'clamp(1rem, 2.4vw, 1.2rem)',
               fontWeight: 500,
               marginBottom: '0.3rem',
               color: 'var(--moonlight)'
@@ -115,7 +115,7 @@ export default async function Shows() {
           <div
             style={{
               color: 'var(--herb)',
-              fontSize: '1rem',
+              fontSize: 'clamp(0.9rem, 2vw, 1rem)',
               fontWeight: 300
             }}
           >
@@ -144,8 +144,8 @@ export default async function Shows() {
               rel="noopener noreferrer"
               className="ticket-button"
               style={{
-                fontSize: '0.9rem',
-                padding: '0.6rem 1.2rem'
+                fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
+                padding: 'clamp(0.5rem, 1.5vw, 0.6rem) clamp(1rem, 2.5vw, 1.2rem)'
               }}
             >
               Get Tickets
@@ -158,12 +158,12 @@ export default async function Shows() {
               rel="noopener noreferrer"
               style={{
                 display: 'inline-block',
-                padding: '0.6rem 1.2rem',
+                padding: 'clamp(0.5rem, 1.5vw, 0.6rem) clamp(1rem, 2.5vw, 1.2rem)',
                 border: '1px solid var(--sage)',
                 backgroundColor: 'rgba(156, 174, 133, 0.1)',
                 color: 'var(--moonlight)',
                 textDecoration: 'none',
-                fontSize: '0.9rem',
+                fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
                 borderRadius: '2px',
                 transition: 'all 0.3s ease'
               }}
@@ -178,7 +178,7 @@ export default async function Shows() {
 
   return (
     <>
-      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 2rem', position: 'relative', zIndex: 2 }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 clamp(1rem, 4vw, 2rem)', position: 'relative', zIndex: 2 }}>
 
         {/* Upcoming Shows */}
         {upcomingShows.length > 0 && (
@@ -197,8 +197,8 @@ export default async function Shows() {
             </h2>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '1.5rem'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: 'clamp(1rem, 3vw, 1.5rem)'
             }}>
               {upcomingShows.map((show) => (
                 <ShowCard key={show.slug} show={show} />
@@ -225,8 +225,8 @@ export default async function Shows() {
             </h2>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '1.5rem'
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: 'clamp(1rem, 3vw, 1.5rem)'
             }}>
               {pastShows.map((show) => (
                 <ShowCard key={show.slug} show={show} isPast />
