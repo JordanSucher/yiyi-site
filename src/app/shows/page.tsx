@@ -1,8 +1,31 @@
 import Link from 'next/link'
-import { getAllShows, getSiteSettings } from '@/lib/content'
+import { getSiteSettings } from '@/lib/content'
 
-export default function Shows() {
-  const shows = getAllShows()
+async function getShows() {
+  if (process.env.NODE_ENV !== 'production') {
+    // In development, use the getAllShows function from lib/content
+    const { getAllShows } = require('@/lib/content')
+    return getAllShows()
+  }
+
+  // In production, fetch from the API endpoint that connects to Redis
+  try {
+    const response = await fetch(`${process.env.NEXTJS_URL || 'http://localhost:3000'}/api/shows`, {
+      cache: 'no-store' // Ensure we always get fresh data
+    })
+    if (!response.ok) {
+      console.error('Failed to fetch shows:', response.status)
+      return []
+    }
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching shows:', error)
+    return []
+  }
+}
+
+export default async function Shows() {
+  const shows = await getShows()
   const settings = getSiteSettings()
 
   // Separate upcoming and past shows
