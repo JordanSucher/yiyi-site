@@ -1142,6 +1142,7 @@ function ShowForm({ show, isNew, onSave, onCancel }: ShowFormProps) {
   const [formData, setFormData] = useState(show)
 
   const handleSubmit = (e: React.FormEvent) => {
+    console.log('ShowForm handleSubmit triggered')
     e.preventDefault()
 
     let dataToSave = formData
