@@ -13,13 +13,7 @@ interface Show {
 }
 
 async function getShows(): Promise<Show[]> {
-  if (process.env.NODE_ENV !== 'production') {
-    // In development, use the getAllShows function from lib/content
-    const { getAllShows } = require('@/lib/content')
-    return getAllShows()
-  }
-
-  // In production, fetch from the API endpoint that connects to Redis
+  // Always fetch from the API endpoint - this works in both dev and production
   try {
     const response = await fetch(`${process.env.NEXTJS_URL || 'http://localhost:3000'}/api/shows`, {
       cache: 'no-store' // Ensure we always get fresh data
