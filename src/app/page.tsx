@@ -1,7 +1,18 @@
 import Link from 'next/link'
 import { getSiteSettings } from '@/lib/content'
 
-async function getShows() {
+interface Show {
+  slug: string
+  title: string
+  date: string
+  venue: string
+  location: string
+  content?: string
+  ticketUrl?: string
+  url?: string
+}
+
+async function getShows(): Promise<Show[]> {
   if (process.env.NODE_ENV !== 'production') {
     // In development, use the getAllShows function from lib/content
     const { getAllShows } = require('@/lib/content')
