@@ -1144,14 +1144,18 @@ function ShowForm({ show, isNew, onSave, onCancel }: ShowFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    let dataToSave = formData
+
     // Generate slug from title and date if new
     if (isNew && !formData.slug) {
       const dateStr = new Date(formData.date).toISOString().split('T')[0]
       const titleSlug = formData.title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '')
-      setFormData(prev => ({ ...prev, slug: `${dateStr}-${titleSlug}` }))
+      dataToSave = { ...formData, slug: `${dateStr}-${titleSlug}` }
+      setFormData(dataToSave)
     }
 
-    onSave(formData)
+    console.log('ShowForm submitting:', dataToSave)
+    onSave(dataToSave)
   }
 
   return (
