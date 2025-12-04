@@ -53,7 +53,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       {!isAdminPage && (
         <>
           <div className="ritual-symbol symbol-1">⚛</div>
-          <div className="ritual-symbol symbol-2">𖤍</div>
+          <div className="ritual-symbol symbol-2">◈</div>
           <div className="ritual-symbol symbol-3">⟐</div>
           <div className="ritual-symbol symbol-4">◉</div>
           <div className="ritual-symbol symbol-5">⟢</div>
