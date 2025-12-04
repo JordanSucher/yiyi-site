@@ -15,7 +15,9 @@ interface Show {
 async function getShows(): Promise<Show[]> {
   // Always fetch from the API endpoint - this works in both dev and production
   try {
-    const response = await fetch(`${process.env.NEXTJS_URL || 'http://localhost:3000'}/api/shows`, {
+    // In production, use relative URL to avoid localhost issues
+    const baseUrl = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000'
+    const response = await fetch(`${baseUrl}/api/shows`, {
       cache: 'no-store' // Ensure we always get fresh data
     })
     if (!response.ok) {
