@@ -8,8 +8,9 @@ let redis: Redis | null = null
 
 function getRedis() {
   if (!redis && process.env.NODE_ENV === 'production') {
-    const url = process.env.UPSTASH_REDIS_REST_URL
-    const token = process.env.UPSTASH_REDIS_REST_TOKEN
+    // Try multiple possible environment variable names
+    const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.REDIS_URL
+    const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN
 
     if (url && token) {
       redis = new Redis({
