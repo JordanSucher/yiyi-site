@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
-
-const MUSIC_SAMPLES_FILE = path.join(process.cwd(), 'content/music-samples.json')
+import { getMusicSamplesFromRedis, saveMusicSamplesToRedis, initializeRedis } from '@/lib/kv-storage'
 
 interface MusicSample {
   id: string
@@ -23,21 +20,11 @@ function extractYouTubeVideoId(url: string): string | null {
   return (match && match[7].length === 11) ? match[7] : null
 }
 
-// Helper function to ensure file exists
-function ensureMusicSamplesFile() {
-  if (!fs.existsSync(MUSIC_SAMPLES_FILE)) {
-    const initialData = { samples: [] }
-    fs.writeFileSync(MUSIC_SAMPLES_FILE, JSON.stringify(initialData, null, 2))
-  }
-}
-
 // GET - Retrieve all music samples
 export async function GET() {
   try {
-    ensureMusicSamplesFile()
-    const data = fs.readFileSync(MUSIC_SAMPLES_FILE, 'utf8')
-    const musicSamples = JSON.parse(data)
-    const samples = musicSamples.samples || []
+    await initializeRedis()
+    const samples = await getMusicSamplesFromRedis()
 
     // Sort by order, then by title if no order specified
     samples.sort((a: MusicSample, b: MusicSample) => {
@@ -64,9 +51,7 @@ export async function POST(request: NextRequest) {
     // Remove any existing id field to ensure we generate a new one
     const { id: _, ...sample } = sampleData
 
-    ensureMusicSamplesFile()
-    const data = fs.readFileSync(MUSIC_SAMPLES_FILE, 'utf8')
-    const musicSamples = JSON.parse(data)
+    const existingSamples = await getMusicSamplesFromRedis()
 
     // Generate ID based on title with fallback
     let id = sample.title ? sample.title.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') : ''
@@ -77,7 +62,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for duplicates and append number if needed
-    const existingSamples = musicSamples.samples || []
     let uniqueId = id
     let counter = 1
     while (existingSamples.some((s: MusicSample) => s.id === uniqueId)) {
@@ -95,7 +79,7 @@ export async function POST(request: NextRequest) {
 
     // Ensure order is unique if specified
     if (sample.order !== undefined && sample.order !== null) {
-      const existingOrders = (musicSamples.samples || []).map((s: MusicSample) => s.order).filter(Boolean)
+      const existingOrders = existingSamples.map((s: MusicSample) => s.order).filter(Boolean)
       if (existingOrders.includes(sample.order)) {
         // Find the next available order number
         let nextOrder = sample.order
@@ -111,10 +95,8 @@ export async function POST(request: NextRequest) {
       ...sample
     }
 
-    musicSamples.samples = musicSamples.samples || []
-    musicSamples.samples.push(newSample)
-
-    fs.writeFileSync(MUSIC_SAMPLES_FILE, JSON.stringify(musicSamples, null, 2))
+    const updatedSamples = [...existingSamples, newSample]
+    await saveMusicSamplesToRedis(updatedSamples)
 
     return NextResponse.json(newSample, { status: 201 })
   } catch (error) {
@@ -136,18 +118,14 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    ensureMusicSamplesFile()
-    const data = fs.readFileSync(MUSIC_SAMPLES_FILE, 'utf8')
-    const musicSamples = JSON.parse(data)
-
-    const index = musicSamples.samples.findIndex((s: MusicSample) => s.id === updatedSample.id)
+    const existingSamples = await getMusicSamplesFromRedis()
+    const index = existingSamples.findIndex((s: MusicSample) => s.id === updatedSample.id)
     if (index === -1) {
       return NextResponse.json({ error: 'Music sample not found' }, { status: 404 })
     }
 
-    musicSamples.samples[index] = updatedSample
-
-    fs.writeFileSync(MUSIC_SAMPLES_FILE, JSON.stringify(musicSamples, null, 2))
+    existingSamples[index] = updatedSample
+    await saveMusicSamplesToRedis(existingSamples)
 
     return NextResponse.json(updatedSample)
   } catch (error) {
@@ -166,13 +144,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Music sample ID required' }, { status: 400 })
     }
 
-    ensureMusicSamplesFile()
-    const data = fs.readFileSync(MUSIC_SAMPLES_FILE, 'utf8')
-    const musicSamples = JSON.parse(data)
-
-    musicSamples.samples = musicSamples.samples.filter((s: MusicSample) => s.id !== id)
-
-    fs.writeFileSync(MUSIC_SAMPLES_FILE, JSON.stringify(musicSamples, null, 2))
+    const existingSamples = await getMusicSamplesFromRedis()
+    const updatedSamples = existingSamples.filter((s: MusicSample) => s.id !== id)
+    await saveMusicSamplesToRedis(updatedSamples)
 
     return NextResponse.json({ success: true })
   } catch (error) {

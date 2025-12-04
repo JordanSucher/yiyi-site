@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
-import { getSiteSettings } from '@/lib/content'
-
-const settingsPath = path.join(process.cwd(), 'content', 'site-settings.json')
+import { getSettingsFromRedis, saveSettingsToRedis, initializeRedis } from '@/lib/kv-storage'
 
 export async function GET() {
   try {
-    const settings = getSiteSettings()
+    await initializeRedis()
+    const settings = await getSettingsFromRedis()
     return NextResponse.json(settings)
   } catch (error) {
+    console.error('Error fetching settings:', error)
     return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 })
   }
 }
@@ -17,16 +15,7 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     const settingsData = await request.json()
-
-    // Ensure content directory exists
-    const contentDir = path.dirname(settingsPath)
-    if (!fs.existsSync(contentDir)) {
-      fs.mkdirSync(contentDir, { recursive: true })
-    }
-
-    // Write the settings file
-    fs.writeFileSync(settingsPath, JSON.stringify(settingsData, null, 2), 'utf8')
-
+    await saveSettingsToRedis(settingsData)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error updating settings:', error)

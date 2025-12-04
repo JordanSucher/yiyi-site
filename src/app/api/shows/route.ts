@@ -2,15 +2,17 @@ import { NextResponse } from 'next/server'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
-import { getAllShows } from '@/lib/content'
+import { getShowsFromRedis, saveShowsToRedis, initializeRedis } from '@/lib/kv-storage'
 
 const contentDirectory = path.join(process.cwd(), 'content', 'shows')
 
 export async function GET() {
   try {
-    const shows = getAllShows()
+    await initializeRedis()
+    const shows = await getShowsFromRedis()
     return NextResponse.json(shows)
   } catch (error) {
+    console.error('Error fetching shows:', error)
     return NextResponse.json({ error: 'Failed to fetch shows' }, { status: 500 })
   }
 }
@@ -26,26 +28,44 @@ export async function POST(request: Request) {
       showData.slug = `${dateStr}-${titleSlug}`
     }
 
-    // Create the frontmatter content
-    const frontmatter = {
-      title: showData.title,
-      date: showData.date,
-      venue: showData.venue,
-      location: showData.location,
-      ...(showData.ticketUrl && { ticketUrl: showData.ticketUrl }),
-      ...(showData.url && { url: showData.url })
+    if (process.env.NODE_ENV === 'production') {
+      // In production, store in KV as show object
+      const newShow = {
+        slug: showData.slug,
+        title: showData.title,
+        date: showData.date,
+        venue: showData.venue,
+        location: showData.location,
+        content: showData.content || '',
+        ...(showData.ticketUrl && { ticketUrl: showData.ticketUrl }),
+        ...(showData.url && { url: showData.url })
+      }
+
+      const existingShows = await getShowsFromRedis()
+      const updatedShows = [...existingShows, newShow]
+      await saveShowsToRedis(updatedShows)
+    } else {
+      // In development, save to file
+      const frontmatter = {
+        title: showData.title,
+        date: showData.date,
+        venue: showData.venue,
+        location: showData.location,
+        ...(showData.ticketUrl && { ticketUrl: showData.ticketUrl }),
+        ...(showData.url && { url: showData.url })
+      }
+
+      const fileContent = matter.stringify(showData.content || '', frontmatter)
+
+      // Ensure directory exists
+      if (!fs.existsSync(contentDirectory)) {
+        fs.mkdirSync(contentDirectory, { recursive: true })
+      }
+
+      // Write the file
+      const filePath = path.join(contentDirectory, `${showData.slug}.mdx`)
+      fs.writeFileSync(filePath, fileContent, 'utf8')
     }
-
-    const fileContent = matter.stringify(showData.content || '', frontmatter)
-
-    // Ensure directory exists
-    if (!fs.existsSync(contentDirectory)) {
-      fs.mkdirSync(contentDirectory, { recursive: true })
-    }
-
-    // Write the file
-    const filePath = path.join(contentDirectory, `${showData.slug}.mdx`)
-    fs.writeFileSync(filePath, fileContent, 'utf8')
 
     return NextResponse.json({ success: true, slug: showData.slug })
   } catch (error) {
@@ -58,21 +78,43 @@ export async function PUT(request: Request) {
   try {
     const showData = await request.json()
 
-    // Create the frontmatter content
-    const frontmatter = {
-      title: showData.title,
-      date: showData.date,
-      venue: showData.venue,
-      location: showData.location,
-      ...(showData.ticketUrl && { ticketUrl: showData.ticketUrl }),
-      ...(showData.url && { url: showData.url })
+    if (process.env.NODE_ENV === 'production') {
+      // In production, update in KV
+      const existingShows = await getShowsFromRedis()
+      const index = existingShows.findIndex((show: any) => show.slug === showData.slug)
+
+      if (index === -1) {
+        return NextResponse.json({ error: 'Show not found' }, { status: 404 })
+      }
+
+      const updatedShow = {
+        slug: showData.slug,
+        title: showData.title,
+        date: showData.date,
+        venue: showData.venue,
+        location: showData.location,
+        content: showData.content || '',
+        ...(showData.ticketUrl && { ticketUrl: showData.ticketUrl }),
+        ...(showData.url && { url: showData.url })
+      }
+
+      existingShows[index] = updatedShow
+      await saveShowsToRedis(existingShows)
+    } else {
+      // In development, update file
+      const frontmatter = {
+        title: showData.title,
+        date: showData.date,
+        venue: showData.venue,
+        location: showData.location,
+        ...(showData.ticketUrl && { ticketUrl: showData.ticketUrl }),
+        ...(showData.url && { url: showData.url })
+      }
+
+      const fileContent = matter.stringify(showData.content || '', frontmatter)
+      const filePath = path.join(contentDirectory, `${showData.slug}.mdx`)
+      fs.writeFileSync(filePath, fileContent, 'utf8')
     }
-
-    const fileContent = matter.stringify(showData.content || '', frontmatter)
-
-    // Write the file
-    const filePath = path.join(contentDirectory, `${showData.slug}.mdx`)
-    fs.writeFileSync(filePath, fileContent, 'utf8')
 
     return NextResponse.json({ success: true })
   } catch (error) {
@@ -90,14 +132,22 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'Slug is required' }, { status: 400 })
     }
 
-    const filePath = path.join(contentDirectory, `${slug}.mdx`)
-
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath)
-      return NextResponse.json({ success: true })
+    if (process.env.NODE_ENV === 'production') {
+      // In production, remove from KV
+      const existingShows = await getShowsFromRedis()
+      const updatedShows = existingShows.filter((show: any) => show.slug !== slug)
+      await saveShowsToRedis(updatedShows)
     } else {
-      return NextResponse.json({ error: 'Show not found' }, { status: 404 })
+      // In development, delete file
+      const filePath = path.join(contentDirectory, `${slug}.mdx`)
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath)
+      } else {
+        return NextResponse.json({ error: 'Show not found' }, { status: 404 })
+      }
     }
+
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error deleting show:', error)
     return NextResponse.json({ error: 'Failed to delete show' }, { status: 500 })
