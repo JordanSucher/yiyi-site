@@ -8,7 +8,7 @@ export default function About() {
     <>
       {/* Ritual symbols floating in background */}
       <div className="ritual-symbol symbol-1">◬</div>
-      <div className="ritual-symbol symbol-2">⚘</div>
+      <div className="ritual-symbol symbol-2">◉</div>
       <div className="ritual-symbol symbol-3">✺</div>
 
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 clamp(1rem, 4vw, 2rem)', position: 'relative', zIndex: 2 }}>
