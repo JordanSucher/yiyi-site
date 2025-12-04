@@ -130,16 +130,24 @@ export default function Admin() {
   const handleSaveShow = async (showData: Show) => {
     try {
       const method = isNewShow ? 'POST' : 'PUT'
+      console.log('Saving show with method:', method, 'Data:', showData)
+
       const response = await fetch('/api/shows', {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(showData)
       })
 
+      console.log('Response status:', response.status)
+
       if (response.ok) {
+        console.log('Show saved successfully')
         await fetchShows()
         setEditingShow(null)
         setIsNewShow(false)
+      } else {
+        const errorText = await response.text()
+        console.error('Failed to save show:', response.status, errorText)
       }
     } catch (error) {
       console.error('Error saving show:', error)
