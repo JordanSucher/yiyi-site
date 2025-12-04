@@ -1,0 +1,30 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "content"
+    label: "Site Content"
+    files:
+      - label: "Homepage"
+        name: "homepage"
+        file: "content/homepage.json"
+        fields:
+          - { label: "Hero Title", name: "hero_title", widget: "string" }
+          - { label: "Hero Description", name: "hero_description", widget: "text" }
+          - { label: "About Text", name: "about_text", widget: "text" }
+          - { label: "Contact Email", name: "contact_email", widget: "string" }
+  
+  - name: "shows"
+    label: "Shows"
+    folder: "content/shows"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Date", name: "date", widget: "string", hint: "e.g. Dec 14" }
+      - { label: "Venue", name: "venue", widget: "string" }
+      - { label: "Location", name: "location", widget: "string" }
+      - { label: "Sort Date", name: "sort_date", widget: "datetime", hint: "Used for ordering shows" }
