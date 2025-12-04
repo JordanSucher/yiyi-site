@@ -13,12 +13,22 @@ interface Show {
 }
 
 async function getShows(): Promise<Show[]> {
-  // Always fetch from the API endpoint - this works in both dev and production
+  // In production, directly use the Redis functions to avoid fetch issues
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      const { getShowsFromRedis, initializeRedis } = require('@/lib/kv-storage')
+      await initializeRedis()
+      return await getShowsFromRedis()
+    } catch (error) {
+      console.error('Error getting shows from Redis:', error)
+      return []
+    }
+  }
+
+  // In development, fetch from the API endpoint
   try {
-    // In production, use relative URL to avoid localhost issues
-    const baseUrl = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/shows`, {
-      cache: 'no-store' // Ensure we always get fresh data
+    const response = await fetch('http://localhost:3000/api/shows', {
+      cache: 'no-store'
     })
     if (!response.ok) {
       console.error('Failed to fetch shows:', response.status)
