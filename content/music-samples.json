@@ -1,0 +1,26 @@
+{
+  "samples": [
+    {
+      "id": "lemko-fest",
+      "title": "Lemko Fest",
+      "description": "",
+      "type": "video",
+      "videoUrl": "https://www.youtube.com/embed/FraSDxXUoRE",
+      "audioUrl": "",
+      "linkUrl": "",
+      "linkText": "",
+      "order": 2
+    },
+    {
+      "id": "bandcamp",
+      "title": "Bandcamp",
+      "description": "",
+      "type": "link",
+      "videoUrl": "",
+      "audioUrl": "",
+      "linkUrl": "https://bandcamp.com/",
+      "linkText": "",
+      "order": 1
+    }
+  ]
+}

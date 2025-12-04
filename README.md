@@ -1,163 +1,126 @@
-# Yi Yi Website - Self-Hosted CMS Setup
+# Yi Yi Band Website
 
-This site uses **Decap CMS** (formerly Netlify CMS), a free, open-source content management system that stores content in Git.
+A Next.js website for managing band shows and content with a simple admin interface for non-technical users.
 
-## What Your Client Gets
+## Features
 
-- Go to `yoursite.com/admin` 
-- Edit text content in a clean interface
-- Add/edit/delete shows
-- Changes save automatically
-- No coding required
+- **Public Website**: Clean, modern design showcasing upcoming and past shows
+- **Admin Interface**: Simple form-based interface for managing shows
+- **File-based Content**: Shows stored as markdown files (no database required)
+- **Password Protected**: Secure admin area with JWT authentication
+- **Vercel Ready**: Optimized for easy deployment
 
-## Setup Options
+## Getting Started
 
-### Option 1: GitHub + Netlify (Free, Recommended)
+### Development
 
-**Step 1: Push to GitHub**
-```bash
-# Create a new repo on github.com
-# Then in your terminal:
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/yourusername/yiyi-website.git
-git push -u origin main
-```
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-**Step 2: Deploy to Netlify**
-1. Go to netlify.com (free account)
-2. "Add new site" → "Import an existing project"
-3. Connect to GitHub, select your repo
-4. Deploy!
+3. Copy the environment file:
+   ```bash
+   cp .env.example .env.local
+   ```
 
-**Step 3: Enable Decap CMS**
-1. In Netlify dashboard: Site Settings → Identity → Enable Identity
-2. Settings → Identity → Registration → Invite only
-3. Settings → Identity → Services → Enable Git Gateway
-4. Identity tab → Invite users → Add your client's email
-5. They'll get an email to set up their account
-6. Done! They can now go to `yoursite.com/admin`
+4. Update `.env.local` with your settings:
+   ```
+   ADMIN_PASSWORD=your-secure-password
+   JWT_SECRET=your-jwt-secret
+   NEXT_PUBLIC_SITE_URL=http://localhost:3000
+   ```
 
-**Custom domain**: Netlify makes this easy in Settings → Domain management
+5. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
----
+6. Open [http://localhost:3000](http://localhost:3000) to view the website
+7. Go to [http://localhost:3000/admin](http://localhost:3000/admin) to manage content
 
-### Option 2: Self-Host on Your Own Server
+### Content Management
 
-If you want full control and want to host it yourself:
+**For Non-Technical Users:**
 
-**Requirements:**
-- A server (VPS like DigitalOcean, AWS, etc.)
-- Node.js installed
-- Git installed
+1. Go to `yoursite.com/admin`
+2. Login with the admin password
+3. Add, edit, or delete shows using the simple forms
+4. Changes are saved immediately
 
-**Step 1: Set up the server**
-```bash
-# Install Node.js and nginx
-sudo apt update
-sudo apt install nodejs npm nginx git
+**Content Structure:**
+- Shows are stored in `content/shows/` as `.mdx` files
+- Each show includes: title, date, venue, location, ticket URL, and description
+- Pages are stored in `content/pages/` (currently just the About page)
 
-# Clone your repo
-cd /var/www
-git clone https://github.com/yourusername/yiyi-website.git
-cd yiyi-website
-```
+### Deployment on Vercel
 
-**Step 2: Set up nginx**
-Create `/etc/nginx/sites-available/yiyi`:
-```nginx
-server {
-    listen 80;
-    server_name yoursite.com;
-    root /var/www/yiyi-website;
-    index index-dynamic.html;
+1. **Push to GitHub:**
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin https://github.com/yourusername/yiyi-site.git
+   git push -u origin main
+   ```
 
-    location / {
-        try_files $uri $uri/ /index-dynamic.html;
-    }
-}
-```
+2. **Deploy to Vercel:**
+   - Go to [vercel.com](https://vercel.com)
+   - Import your GitHub repository
+   - Set environment variables:
+     - `ADMIN_PASSWORD`: Your secure admin password
+     - `JWT_SECRET`: A secure random string for JWT tokens
 
-```bash
-sudo ln -s /etc/nginx/sites-available/yiyi /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl reload nginx
-```
+3. **Custom Domain (Optional):**
+   - In Vercel dashboard: Settings → Domains
+   - Add your custom domain
 
-**Step 3: Set up Git-based authentication**
+### Security
 
-For self-hosted, you need to set up a Git backend. Two options:
+- Change the default admin password in production
+- Use a strong JWT secret
+- Admin area is protected by password + JWT tokens
+- Tokens expire after 24 hours
 
-**Option A: Use Netlify Identity (easier)**
-- Still use Netlify's free Identity service for auth
-- Your site is self-hosted, but auth goes through Netlify
-- Update `admin/config.yml`:
-```yaml
-backend:
-  name: git-gateway
-  branch: main
-```
-
-**Option B: Use GitHub OAuth (more complex but fully self-hosted)**
-- Set up GitHub OAuth app
-- Run a small authentication server
-- More technical but completely independent
-
----
-
-### Option 3: Static CMS (Simpler Alternative)
-
-If Git feels too complex, use **TinaCMS** or **Forestry** instead:
-- Visual editing directly on the page
-- Saves to markdown files
-- Can still self-host
-- Better UI for non-technical users
-
-Let me know if you want me to set this up instead!
-
----
-
-## File Structure
+### File Structure
 
 ```
-yiyi-website/
-├── index-dynamic.html          # Main site (loads content from JSON)
-├── admin/
-│   ├── index.html             # CMS admin interface
-│   └── config.yml             # CMS configuration
+├── src/
+│   ├── app/
+│   │   ├── page.tsx              # Homepage
+│   │   ├── shows/page.tsx        # Shows listing
+│   │   ├── about/page.tsx        # About page
+│   │   ├── admin/                # Admin interface
+│   │   └── api/                  # API routes
+│   └── lib/
+│       └── content.ts            # Content utilities
 ├── content/
-│   ├── homepage.json          # Editable homepage text
-│   └── shows/                 # Individual show files
-│       ├── 2024-12-14-owl.json
-│       ├── 2025-01-08-bohemia.json
-│       └── 2025-02-02-pioneer.json
-└── images/                    # Uploaded images go here
+│   ├── shows/                    # Show files (.mdx)
+│   └── pages/                    # Page content
+├── public/                       # Static assets
+└── vercel.json                   # Vercel config
 ```
 
-## What Your Client Can Edit
+### Customization
 
-✅ Hero title and description
-✅ About section text
-✅ Contact email
-✅ Add/edit/remove shows (date, venue, location)
-❌ Cannot break the site design (it's locked)
+**Styling:**
+- Uses Tailwind CSS
+- Colors and fonts can be customized in `tailwind.config.js`
+- Main brand color is currently white/black theme
 
-## Alternative: Even Simpler Options
+**Content:**
+- Edit `content/pages/about.mdx` for the about page
+- Shows are automatically managed through the admin interface
 
-If this still feels too technical:
+**Features to Add:**
+- Photo galleries
+- Music streaming integration
+- Mailing list signup
+- Social media links
 
-1. **Cloudflare Pages + Decap**: Same as Netlify but with Cloudflare
-2. **Vercel + Decap**: Another free hosting option
-3. **Jekyll + Forestry.io**: Different tech stack, arguably better UI
-4. **WordPress**: If you just want the easiest option (but requires PHP/MySQL)
+### Support
 
-## My Recommendation
+Default admin password: `admin123` (change this!)
 
-For a band website where they just need to update shows and text:
-- **Use Netlify + Decap CMS** (Option 1)
-- It's free, reliable, and they have good support
-- 5-minute setup, no server maintenance
-- Your client gets a clean admin interface
-
-Want me to walk you through the Netlify setup?
+For issues or questions, check the GitHub repository or create an issue.

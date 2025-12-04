@@ -1,0 +1,370 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --night: #0d0b0a;
+  --earth: #2a241f;
+  --moss: #3d4a32;
+  --ember: #8b4513;
+  --moonlight: #f4f1e8;
+  --herb: #5a6b47;
+  --smoke: #6d6358;
+  --ritual-red: #722f1b;
+  --deep-forest: #1a2015;
+  --bone: #e6ddd4;
+  --copper: #b87333;
+  --wine: #4a1e1e;
+  --sage: #9cae85;
+  --obsidian: #1c1814;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-spectral), serif;
+  background: var(--night);
+  color: var(--moonlight);
+  overflow-x: hidden;
+  position: relative;
+  font-weight: 300;
+}
+
+/* Grain texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.08;
+  z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Flame particles floating effect */
+body::after {
+  content: '';
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(2px 2px at 20% 30%, var(--ember), transparent),
+              radial-gradient(2px 2px at 60% 70%, var(--ember), transparent),
+              radial-gradient(1px 1px at 50% 50%, var(--herb), transparent),
+              radial-gradient(1px 1px at 80% 10%, var(--moonlight), transparent),
+              radial-gradient(2px 2px at 90% 60%, var(--moss), transparent),
+              radial-gradient(2px 2px at 15% 80%, var(--ember), transparent);
+  background-size: 300% 300%;
+  background-position: 0% 0%;
+  animation: drift 60s ease-in-out infinite;
+  opacity: 0.15;
+}
+
+@keyframes drift {
+  0%, 100% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+}
+
+@keyframes fadeGlow {
+  from {
+    opacity: 0;
+    text-shadow: 0 0 20px var(--ember);
+  }
+  to {
+    opacity: 1;
+    text-shadow: 0 0 0 transparent;
+  }
+}
+
+@keyframes rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes fadeRise {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.05);
+    opacity: 0.1;
+  }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.08;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.15;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Ornate decorative elements */
+.ritual-symbol {
+  position: fixed;
+  font-size: 2.5rem;
+  opacity: 0.12;
+  z-index: 0;
+  animation: breathe 12s ease-in-out infinite;
+  font-family: 'serif';
+  text-shadow: 0 0 10px currentColor;
+}
+
+.symbol-1 {
+  top: 12%;
+  right: 8%;
+  color: var(--copper);
+}
+
+.symbol-2 {
+  bottom: 20%;
+  left: 6%;
+  color: var(--sage);
+}
+
+.symbol-3 {
+  top: 65%;
+  right: 15%;
+  color: var(--ember);
+}
+
+.symbol-4 {
+  top: 40%;
+  left: 3%;
+  color: var(--wine);
+  opacity: 0.08;
+}
+
+.symbol-5 {
+  bottom: 45%;
+  right: 5%;
+  color: var(--moss);
+  opacity: 0.06;
+}
+
+/* Ornate border patterns */
+.ornate-border::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg,
+    var(--copper) 0%,
+    transparent 25%,
+    var(--sage) 50%,
+    transparent 75%,
+    var(--copper) 100%);
+  z-index: -1;
+  border-radius: inherit;
+}
+
+.ornate-border::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: var(--night);
+  z-index: -1;
+  border-radius: inherit;
+}
+
+@media (max-width: 768px) {
+  .ritual-symbol {
+    font-size: 1.8rem;
+  }
+}
+
+/* Interactive hover effects for navigation links */
+.nav-link {
+  color: var(--herb);
+  text-decoration: none;
+  fontSize: 1.1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--ember);
+}
+
+.nav-link.active {
+  color: var(--ember);
+}
+
+/* Interactive hover effects for buttons and cards */
+.show-card {
+  background: linear-gradient(135deg,
+    rgba(42, 36, 31, 0.3) 0%,
+    rgba(28, 24, 20, 0.5) 50%,
+    rgba(42, 36, 31, 0.3) 100%);
+  padding: 3rem;
+  border: 2px solid var(--earth);
+  position: relative;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(8px);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(244, 241, 232, 0.1);
+}
+
+.show-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid var(--copper);
+  opacity: 0.3;
+  pointer-events: none;
+  margin: 8px;
+}
+
+.show-card:hover {
+  transform: translateY(-12px);
+  background: linear-gradient(135deg,
+    rgba(90, 107, 71, 0.2) 0%,
+    rgba(42, 36, 31, 0.6) 50%,
+    rgba(90, 107, 71, 0.2) 100%);
+  border-color: var(--sage);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(244, 241, 232, 0.15),
+    0 0 20px rgba(183, 115, 51, 0.3);
+}
+
+.past-show-card {
+  background: rgba(90, 74, 58, 0.1);
+  padding: 2rem;
+  border: 1px solid var(--earth);
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.past-show-card:hover {
+  opacity: 0.9;
+}
+
+.contact-section {
+  display: inline-block;
+  padding: 3rem 5rem;
+  border: 2px solid var(--ritual-red);
+  position: relative;
+  transition: all 0.4s ease;
+  background: linear-gradient(135deg,
+    rgba(114, 47, 27, 0.15) 0%,
+    rgba(74, 30, 30, 0.2) 50%,
+    rgba(114, 47, 27, 0.15) 100%);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(244, 241, 232, 0.1);
+}
+
+.contact-section::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 1px solid var(--copper);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.contact-section::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 1px dotted var(--wine);
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.contact-section:hover {
+  transform: translateY(-12px);
+  background: linear-gradient(135deg,
+    rgba(114, 47, 27, 0.25) 0%,
+    rgba(74, 30, 30, 0.3) 50%,
+    rgba(114, 47, 27, 0.25) 100%);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(244, 241, 232, 0.15),
+    0 0 30px rgba(114, 47, 27, 0.4);
+}
+
+.ticket-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid var(--ritual-red);
+  background: rgba(180, 67, 42, 0.1);
+  color: var(--moonlight);
+  text-decoration: none;
+  transition: all 0.4s ease;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+}
+
+.ticket-button:hover {
+  transform: translateY(-3px);
+  background: rgba(180, 67, 42, 0.2);
+}
+
+.contact-email {
+  color: var(--herb);
+  text-decoration: none;
+  font-size: 1.3rem;
+  border-bottom: 2px solid var(--moss);
+  transition: all 0.3s ease;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0;
+}
+
+.contact-email:hover {
+  color: var(--ember);
+  border-color: var(--ember);
+  transform: translateY(-2px);
+}

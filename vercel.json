@@ -1,0 +1,10 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "env": {
+    "ADMIN_PASSWORD": "@admin-password",
+    "JWT_SECRET": "@jwt-secret"
+  }
+}

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yi Yi • Village Polyphony</title>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Spectral:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <style>
         :root {
             --night: #1a1614;
@@ -411,11 +410,6 @@
             animation: fadeIn 1.8s ease-out 1.5s both;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         .contact-box {
             display: inline-block;
             padding: 2.5rem 4rem;
@@ -562,29 +556,43 @@
 
         <section class="hero">
             <div class="fire-circle">
-                <h2 id="hero-title">Loading...</h2>
-                <p id="hero-description">Loading...</p>
+                <h2>Dissonant harmonies from the village, refracted through Brooklyn</h2>
+                <p>Three women excavating the raw polyphonic traditions of rural Ukraine—the kind of singing that uses chest voice like a weapon, where intervals clash on purpose, where "beautiful" was never the point. We're not here to make folk music palatable.</p>
             </div>
         </section>
 
         <section class="shows">
             <h2 class="section-title">Gatherings</h2>
-            <div class="shows-grid" id="shows-grid">
-                <!-- Shows will be loaded here -->
+            <div class="shows-grid">
+                <div class="show-card">
+                    <span class="show-date">Dec 14</span>
+                    <div class="show-venue">The Owl Music Parlor</div>
+                    <div class="show-location">Brooklyn, NY</div>
+                </div>
+                <div class="show-card">
+                    <span class="show-date">Jan 8</span>
+                    <div class="show-venue">Cafe Bohemia</div>
+                    <div class="show-location">East Village, NY</div>
+                </div>
+                <div class="show-card">
+                    <span class="show-date">Feb 2</span>
+                    <div class="show-venue">Pioneer Works</div>
+                    <div class="show-location">Red Hook, Brooklyn</div>
+                </div>
             </div>
         </section>
 
         <section class="about">
             <h2 class="section-title">The Circle</h2>
             <div class="about-content">
-                <p id="about-text">Loading...</p>
+                <p>Yi Yi practices what ethnomusicologists call "white voice" singing (bilyi holos)—an open-throat, chest-register technique that's been passed down in Ukrainian villages for centuries, sounding nothing like the trained voices you hear on opera stages. Think dissonant intervals, yotized vowels, and the kind of heterophony where three people singing the "same" melody produces controlled chaos. Caroline handles banjo, drums, and vocals. Sasha and Zoya bring violin and accordion, plus the deep knowledge of this music's architecture. We're committed to the abrasive beauty of village polyphony as a living practice, not a museum piece.</p>
             </div>
         </section>
 
         <section class="contact">
             <div class="contact-box">
                 <h3>Join the Circle</h3>
-                <a href="/cdn-cgi/l/email-protection#48202d24242708312131212e272423662b2725" id="contact-email"><span class="__cf_email__" data-cfemail="bfd7dad3d3d0ffc6d6c6d6d9d0d3d491dcd0d2">[email&#160;protected]</span></a>
+                <a href="mailto:hello@yiyifolk.com">hello@yiyifolk.com</a>
             </div>
         </section>
 
@@ -592,44 +600,5 @@
             <p>yi yi • woven in brooklyn • 2024</p>
         </footer>
     </div>
-
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-        // Load homepage content
-        fetch('content/homepage.json')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('hero-title').textContent = data.hero_title;
-                document.getElementById('hero-description').textContent = data.hero_description;
-                document.getElementById('about-text').textContent = data.about_text;
-                document.getElementById('contact-email').textContent = data.contact_email;
-                document.getElementById('contact-email').href = `mailto:${data.contact_email}`;
-            });
-
-        // Load shows
-        async function loadShows() {
-            try {
-                // In production, you'd have a list of show files or use a static site generator
-                // For now, we'll hardcode the known shows
-                const showFiles = [
-                    'content/shows/2024-12-14-owl.json',
-                    'content/shows/2025-01-08-bohemia.json',
-                    'content/shows/2025-02-02-pioneer.json'
-                ];
-
-                const shows = await Promise.all(
-                    showFiles.map(file => 
-                        fetch(file).then(r => r.json()).catch(() => null)
-                    )
-                );
-
-                // Filter out failed fetches and sort by date
-                const validShows = shows
-                    .filter(show => show !== null)
-                    .sort((a, b) => new Date(a.sort_date) - new Date(b.sort_date));
-
-                const showsGrid = document.getElementById('shows-grid');
-                showsGrid.innerHTML = validShows.map(show => `
-                    <div class="show-card">
-                        <span class="show-date">${show.date}</span>
-                        <div class="show-venue">${show.venue}</div>
-                        <div class="show-location">${show
+</body>
+</html>
