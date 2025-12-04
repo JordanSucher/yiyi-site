@@ -10,6 +10,7 @@ export async function GET() {
   try {
     await initializeRedis()
     const shows = await getShowsFromRedis()
+    console.log('Shows retrieved:', shows.length, 'shows')
     return NextResponse.json(shows)
   } catch (error) {
     console.error('Error fetching shows:', error)
@@ -42,8 +43,10 @@ export async function POST(request: Request) {
       }
 
       const existingShows = await getShowsFromRedis()
+      console.log('Existing shows before adding:', existingShows.length)
       const updatedShows = [...existingShows, newShow]
       await saveShowsToRedis(updatedShows)
+      console.log('Show saved. Total shows now:', updatedShows.length)
     } else {
       // In development, save to file
       const frontmatter = {
