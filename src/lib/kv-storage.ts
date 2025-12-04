@@ -191,11 +191,15 @@ export async function getMusicSamplesFromRedis() {
   try {
     const data = await client.get(MUSIC_SAMPLES_KEY)
     if (data) {
-      console.log('Raw music samples data from Redis:', typeof data, typeof data === 'object' ? (data.samples ? `Object with ${data.samples.length} samples` : 'Object (structure unknown)') : data)
+      console.log('Raw music samples data from Redis:', typeof data, typeof data === 'object' ? 'Object' : data)
 
       // If it's already an object (Upstash auto-deserialized), return the samples
-      if (typeof data === 'object' && data.samples && Array.isArray(data.samples)) {
-        return data.samples
+      if (typeof data === 'object' && data !== null) {
+        const objData = data as any
+        if (objData.samples && Array.isArray(objData.samples)) {
+          console.log('Found object with samples array:', objData.samples.length, 'samples')
+          return objData.samples
+        }
       }
       // If it's a string, try to parse it
       if (typeof data === 'string') {
