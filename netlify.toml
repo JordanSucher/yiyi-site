@@ -1,0 +1,8 @@
+[build]
+  # No build command needed - this is a static site
+  publish = "."
+  
+[[redirects]]
+  from = "/*"
+  to = "/index-dynamic.html"
+  status = 200
