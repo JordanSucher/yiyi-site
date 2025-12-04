@@ -202,7 +202,9 @@ export async function getShowsFromRedis() {
   }
 
   try {
+    console.log('Getting shows from Redis with key:', SHOWS_KEY)
     const shows = await client.get(SHOWS_KEY)
+    console.log('Raw shows data from Redis:', typeof shows, shows)
     if (shows) {
       // If data is corrupted, clear it and return empty
       if (shows === '[object Object]' || typeof shows === 'object') {
@@ -237,7 +239,9 @@ export async function saveShowsToRedis(shows: any[]) {
   }
 
   try {
+    console.log('Saving shows to Redis:', shows.length, 'shows with key:', SHOWS_KEY)
     await client.set(SHOWS_KEY, JSON.stringify(shows))
+    console.log('Shows saved successfully to Redis')
   } catch (error) {
     console.error('Error saving shows to Redis:', error)
     throw error
