@@ -177,6 +177,13 @@ body::after {
   opacity: 0.06;
 }
 
+.symbol-6 {
+  top: 15%;
+  left: 12%;
+  color: var(--sage);
+  opacity: 0.10;
+}
+
 /* Ornate border patterns */
 .ornate-border::before {
   content: '';

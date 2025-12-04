@@ -18,7 +18,7 @@ export default function Header({ siteTitle }: HeaderProps) {
         padding: '3rem 0 2rem',
         textAlign: 'center',
         animation: 'fadeGlow 2s ease-out',
-        marginTop: '2rem'
+        marginTop: '3rem'
       }}
     >
       <div style={{ position: 'relative', display: 'inline-block' }}>
