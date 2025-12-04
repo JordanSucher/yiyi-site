@@ -41,6 +41,20 @@ export async function initializeRedis() {
   }
 
   try {
+    // Clean up any corrupted data first
+    const keys = [SETTINGS_KEY, MUSIC_SAMPLES_KEY, SHOWS_KEY]
+    for (const key of keys) {
+      try {
+        const data = await client.get(key)
+        if (data === '[object Object]' || (typeof data === 'object' && data !== null)) {
+          console.log(`Clearing corrupted data for key: ${key}`)
+          await client.del(key)
+        }
+      } catch (error) {
+        console.log(`Error checking/clearing key ${key}:`, error)
+        await client.del(key)
+      }
+    }
     // Check if settings already exist in Redis
     const existingSettings = await client.get(SETTINGS_KEY)
     if (!existingSettings) {
@@ -86,9 +100,24 @@ export async function getSettingsFromRedis() {
 
   try {
     const settings = await client.get(SETTINGS_KEY)
-    return settings ? JSON.parse(settings as string) : getSiteSettings()
+    if (settings) {
+      // If data is corrupted, clear it and return defaults
+      if (settings === '[object Object]' || typeof settings === 'object') {
+        console.log('Corrupted settings data detected, clearing...')
+        await client.del(SETTINGS_KEY)
+        return getSiteSettings()
+      }
+      return JSON.parse(settings as string)
+    }
+    return getSiteSettings()
   } catch (error) {
     console.error('Error getting settings from Redis:', error)
+    // Clear corrupted data
+    try {
+      await client.del(SETTINGS_KEY)
+    } catch (clearError) {
+      console.error('Error clearing corrupted settings data:', clearError)
+    }
     return getSiteSettings()
   }
 }
@@ -111,7 +140,17 @@ export async function saveSettingsToRedis(settings: any) {
   }
 
   try {
-    await client.set(SETTINGS_KEY, JSON.stringify(settings))
+    // Validate settings structure
+    if (!settings || typeof settings !== 'object') {
+      throw new Error('Settings must be a valid object')
+    }
+
+    const jsonString = JSON.stringify(settings)
+    console.log('Saving settings to Redis with key:', SETTINGS_KEY)
+    console.log('JSON string to save:', jsonString.substring(0, 200) + '...')
+
+    await client.set(SETTINGS_KEY, jsonString)
+    console.log('Settings saved successfully to Redis')
   } catch (error) {
     console.error('Error saving settings to Redis:', error)
     throw error
@@ -181,7 +220,17 @@ export async function saveMusicSamplesToRedis(samples: any[]) {
   }
 
   try {
-    await client.set(MUSIC_SAMPLES_KEY, JSON.stringify(data))
+    // Validate data structure
+    if (!data || typeof data !== 'object' || !Array.isArray(data.samples)) {
+      throw new Error('Music samples data must be an object with samples array')
+    }
+
+    const jsonString = JSON.stringify(data)
+    console.log('Saving music samples to Redis:', data.samples.length, 'samples')
+    console.log('JSON string to save:', jsonString.substring(0, 200) + '...')
+
+    await client.set(MUSIC_SAMPLES_KEY, jsonString)
+    console.log('Music samples saved successfully to Redis')
   } catch (error) {
     console.error('Error saving music samples to Redis:', error)
     throw error
@@ -239,9 +288,21 @@ export async function saveShowsToRedis(shows: any[]) {
   }
 
   try {
+    // Validate that shows is an array
+    if (!Array.isArray(shows)) {
+      throw new Error('Shows data must be an array')
+    }
+
+    const jsonString = JSON.stringify(shows)
     console.log('Saving shows to Redis:', shows.length, 'shows with key:', SHOWS_KEY)
-    await client.set(SHOWS_KEY, JSON.stringify(shows))
+    console.log('JSON string to save:', jsonString.substring(0, 200) + '...')
+
+    await client.set(SHOWS_KEY, jsonString)
     console.log('Shows saved successfully to Redis')
+
+    // Verify the save by immediately reading it back
+    const verification = await client.get(SHOWS_KEY)
+    console.log('Verification read:', typeof verification, verification ? 'Data exists' : 'No data')
   } catch (error) {
     console.error('Error saving shows to Redis:', error)
     throw error
