@@ -33,6 +33,7 @@ export interface SiteSettings {
     contactTitle: string
     contactEmail: string
     footerText: string
+    instagramUrl: string
   }
 }
 
@@ -101,7 +102,8 @@ export function getSiteSettings(): SiteSettings {
         showsTitle: 'Gatherings',
         contactTitle: 'Join the Circle',
         contactEmail: 'hello@yiyifolk.com',
-        footerText: 'yi yi • woven in brooklyn • 2024'
+        footerText: 'yi yi • woven in brooklyn • 2024',
+        instagramUrl: 'https://instagram.com/yiyi.folk'
       }
     }
   }
