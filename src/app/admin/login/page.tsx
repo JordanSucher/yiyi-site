@@ -72,11 +72,6 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="mt-4 text-xs text-gray-500 text-center">
-          Default password: <code className="bg-gray-100 px-1 rounded">admin123</code>
-          <br />
-          (Change this in production!)
-        </p>
       </div>
     </div>
   )
