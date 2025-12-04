@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yi Yi • Village Polyphony</title>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Spectral:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <style>
         :root {
             --night: #1a1614;
@@ -583,7 +584,7 @@
         <section class="contact">
             <div class="contact-box">
                 <h3>Join the Circle</h3>
-                <a href="mailto:hello@yiyifolk.com" id="contact-email">hello@yiyifolk.com</a>
+                <a href="/cdn-cgi/l/email-protection#48202d24242708312131212e272423662b2725" id="contact-email"><span class="__cf_email__" data-cfemail="bfd7dad3d3d0ffc6d6c6d6d9d0d3d491dcd0d2">[email&#160;protected]</span></a>
             </div>
         </section>
 
@@ -592,7 +593,7 @@
         </footer>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Load homepage content
         fetch('content/homepage.json')
             .then(response => response.json())
@@ -631,15 +632,4 @@
                     <div class="show-card">
                         <span class="show-date">${show.date}</span>
                         <div class="show-venue">${show.venue}</div>
-                        <div class="show-location">${show.location}</div>
-                    </div>
-                `).join('');
-            } catch (error) {
-                console.error('Error loading shows:', error);
-            }
-        }
-
-        loadShows();
-    </script>
-</body>
-</html>
+                        <div class="show-location">${show

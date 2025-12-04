@@ -2,6 +2,9 @@ backend:
   name: git-gateway
   branch: main
 
+# Enable local backend for testing (optional)
+# local_backend: true
+
 media_folder: "images"
 public_folder: "/images"
 
