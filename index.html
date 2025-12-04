@@ -1,12 +1,645 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yi Yi Admin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yi Yi • Village Polyphony</title>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Spectral:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --night: #1a1614;
+            --earth: #5a4a3a;
+            --moss: #6b7c59;
+            --ember: #d4593f;
+            --moonlight: #e8dcc0;
+            --herb: #8b9d6f;
+            --smoke: #9b8f80;
+            --ritual-red: #b5432a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Spectral', serif;
+            background: var(--night);
+            color: var(--moonlight);
+            overflow-x: hidden;
+            position: relative;
+            font-weight: 300;
+        }
+
+        /* Grain texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+            z-index: 1;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Flame particles floating effect */
+        body::after {
+            content: '';
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(2px 2px at 20% 30%, var(--ember), transparent),
+                        radial-gradient(2px 2px at 60% 70%, var(--ember), transparent),
+                        radial-gradient(1px 1px at 50% 50%, var(--herb), transparent),
+                        radial-gradient(1px 1px at 80% 10%, var(--moonlight), transparent),
+                        radial-gradient(2px 2px at 90% 60%, var(--moss), transparent),
+                        radial-gradient(2px 2px at 15% 80%, var(--ember), transparent);
+            background-size: 300% 300%;
+            background-position: 0% 0%;
+            animation: drift 60s ease-in-out infinite;
+            opacity: 0.15;
+        }
+
+        @keyframes drift {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header with wreath motif */
+        header {
+            padding: 4rem 0 3rem;
+            text-align: center;
+            animation: fadeGlow 2s ease-out;
+        }
+
+        @keyframes fadeGlow {
+            from {
+                opacity: 0;
+                text-shadow: 0 0 20px var(--ember);
+            }
+            to {
+                opacity: 1;
+                text-shadow: 0 0 0 transparent;
+            }
+        }
+
+        .wreath-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .wreath {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 280px;
+            height: 280px;
+            border: 3px dashed var(--herb);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: rotate 40s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .wreath::before,
+        .wreath::after {
+            content: '✦';
+            position: absolute;
+            color: var(--ember);
+            font-size: 1.5rem;
+        }
+
+        .wreath::before {
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .wreath::after {
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .logo {
+            font-family: 'Libre Baskerville', serif;
+            font-size: clamp(4rem, 10vw, 8rem);
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--moonlight);
+            margin-bottom: 0.5rem;
+            position: relative;
+            text-transform: lowercase;
+            font-style: italic;
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--herb);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            font-weight: 300;
+            margin-top: 1.5rem;
+        }
+
+        /* Hero Section - Fire Ritual */
+        .hero {
+            position: relative;
+            margin: 5rem 0 8rem;
+            animation: fadeRise 1.5s ease-out 0.5s both;
+        }
+
+        @keyframes fadeRise {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fire-circle {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 5rem 3rem;
+            text-align: center;
+        }
+
+        .fire-circle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140%;
+            height: 140%;
+            border: 2px solid var(--ember);
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .fire-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            border: 1px solid var(--ritual-red);
+            border-radius: 50%;
+            opacity: 0.15;
+            animation: pulse 4s ease-in-out infinite 1s;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.2;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.05);
+                opacity: 0.1;
+            }
+        }
+
+        .hero h2 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 400;
+            font-style: italic;
+            margin-bottom: 2rem;
+            color: var(--moonlight);
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .hero p {
+            font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+            line-height: 1.9;
+            color: var(--smoke);
+            max-width: 600px;
+            margin: 0 auto;
+            font-weight: 300;
+        }
+
+        /* Shows Section */
+        .shows {
+            margin: 8rem 0;
+            animation: fadeRise 1.5s ease-out 0.8s both;
+        }
+
+        .section-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 4rem;
+            text-align: center;
+            position: relative;
+            color: var(--moonlight);
+        }
+
+        .section-title::before,
+        .section-title::after {
+            content: '⟡';
+            position: absolute;
+            color: var(--ember);
+            font-size: 0.5em;
+            top: 50%;
+            transform: translateY(-50%);
+            animation: flicker 3s ease-in-out infinite;
+        }
+
+        .section-title::before {
+            left: -2.5rem;
+        }
+
+        .section-title::after {
+            right: -2.5rem;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .shows-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .show-card {
+            background: rgba(90, 74, 58, 0.2);
+            padding: 2.5rem;
+            border: 1px solid var(--earth);
+            position: relative;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .show-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            border: 1px solid var(--ember);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .show-card:hover {
+            transform: translateY(-8px);
+            background: rgba(139, 157, 111, 0.15);
+        }
+
+        .show-card:hover::before {
+            opacity: 0.4;
+        }
+
+        .show-date {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--ember);
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .show-venue {
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: var(--moonlight);
+        }
+
+        .show-location {
+            color: var(--herb);
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+        }
+
+        .show-card::after {
+            content: '※';
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            color: var(--moss);
+            font-size: 1.2rem;
+            opacity: 0.5;
+        }
+
+        /* About Section - Water & Herbs */
+        .about {
+            margin: 8rem 0;
+            animation: fadeRise 1.5s ease-out 1.2s both;
+        }
+
+        .about-content {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 4rem 3rem;
+            border-top: 2px solid var(--moss);
+            border-bottom: 2px solid var(--moss);
+            position: relative;
+            text-align: center;
+        }
+
+        .about-content::before,
+        .about-content::after {
+            content: '❋';
+            position: absolute;
+            color: var(--herb);
+            font-size: 2rem;
+            opacity: 0.4;
+        }
+
+        .about-content::before {
+            top: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .about-content::after {
+            bottom: -1rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .about-content p {
+            font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+            line-height: 2;
+            color: var(--smoke);
+            font-weight: 300;
+        }
+
+        /* Contact Section */
+        .contact {
+            margin: 8rem 0 4rem;
+            text-align: center;
+            animation: fadeIn 1.8s ease-out 1.5s both;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .contact-box {
+            display: inline-block;
+            padding: 2.5rem 4rem;
+            border: 2px solid var(--ritual-red);
+            position: relative;
+            transition: all 0.4s ease;
+            background: rgba(180, 67, 42, 0.1);
+        }
+
+        .contact-box::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border: 1px solid var(--ember);
+            opacity: 0.3;
+        }
+
+        .contact-box:hover {
+            transform: translateY(-5px);
+            background: rgba(180, 67, 42, 0.15);
+        }
+
+        .contact h3 {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--moonlight);
+            font-weight: 400;
+        }
+
+        .contact a {
+            color: var(--herb);
+            text-decoration: none;
+            font-size: 1.2rem;
+            border-bottom: 1px solid var(--moss);
+            transition: all 0.3s ease;
+            letter-spacing: 0.03em;
+        }
+
+        .contact a:hover {
+            color: var(--ember);
+            border-color: var(--ember);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 0 3rem;
+            color: var(--earth);
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            border-top: 1px solid var(--earth);
+            margin-top: 4rem;
+        }
+
+        /* Decorative ritual elements */
+        .ritual-symbol {
+            position: fixed;
+            font-size: 3rem;
+            opacity: 0.08;
+            z-index: 0;
+            animation: breathe 8s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% {
+                opacity: 0.08;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.15;
+                transform: scale(1.1);
+            }
+        }
+
+        .symbol-1 {
+            top: 15%;
+            right: 8%;
+            color: var(--ember);
+        }
+
+        .symbol-2 {
+            bottom: 25%;
+            left: 10%;
+            color: var(--moss);
+        }
+
+        .symbol-3 {
+            top: 60%;
+            right: 12%;
+            color: var(--herb);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            .wreath {
+                width: 200px;
+                height: 200px;
+            }
+
+            .fire-circle {
+                padding: 3rem 2rem;
+            }
+
+            .about-content {
+                padding: 3rem 2rem;
+            }
+
+            .contact-box {
+                padding: 2rem 2.5rem;
+            }
+
+            .ritual-symbol {
+                font-size: 2rem;
+            }
+
+            .section-title::before,
+            .section-title::after {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Include the Decap CMS script -->
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <div class="ritual-symbol symbol-1">◬</div>
+    <div class="ritual-symbol symbol-2">⚘</div>
+    <div class="ritual-symbol symbol-3">✺</div>
+
+    <div class="container">
+        <header>
+            <div class="wreath-container">
+                <div class="wreath"></div>
+                <h1 class="logo">yi yi</h1>
+            </div>
+            <p class="tagline">village polyphony</p>
+        </header>
+
+        <section class="hero">
+            <div class="fire-circle">
+                <h2 id="hero-title">Loading...</h2>
+                <p id="hero-description">Loading...</p>
+            </div>
+        </section>
+
+        <section class="shows">
+            <h2 class="section-title">Gatherings</h2>
+            <div class="shows-grid" id="shows-grid">
+                <!-- Shows will be loaded here -->
+            </div>
+        </section>
+
+        <section class="about">
+            <h2 class="section-title">The Circle</h2>
+            <div class="about-content">
+                <p id="about-text">Loading...</p>
+            </div>
+        </section>
+
+        <section class="contact">
+            <div class="contact-box">
+                <h3>Join the Circle</h3>
+                <a href="mailto:hello@yiyifolk.com" id="contact-email">hello@yiyifolk.com</a>
+            </div>
+        </section>
+
+        <footer>
+            <p>yi yi • woven in brooklyn • 2024</p>
+        </footer>
+    </div>
+
+    <script>
+        // Load homepage content
+        fetch('content/homepage.json')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('hero-title').textContent = data.hero_title;
+                document.getElementById('hero-description').textContent = data.hero_description;
+                document.getElementById('about-text').textContent = data.about_text;
+                document.getElementById('contact-email').textContent = data.contact_email;
+                document.getElementById('contact-email').href = `mailto:${data.contact_email}`;
+            });
+
+        // Load shows
+        async function loadShows() {
+            try {
+                // In production, you'd have a list of show files or use a static site generator
+                // For now, we'll hardcode the known shows
+                const showFiles = [
+                    'content/shows/2024-12-14-owl.json',
+                    'content/shows/2025-01-08-bohemia.json',
+                    'content/shows/2025-02-02-pioneer.json'
+                ];
+
+                const shows = await Promise.all(
+                    showFiles.map(file => 
+                        fetch(file).then(r => r.json()).catch(() => null)
+                    )
+                );
+
+                // Filter out failed fetches and sort by date
+                const validShows = shows
+                    .filter(show => show !== null)
+                    .sort((a, b) => new Date(a.sort_date) - new Date(b.sort_date));
+
+                const showsGrid = document.getElementById('shows-grid');
+                showsGrid.innerHTML = validShows.map(show => `
+                    <div class="show-card">
+                        <span class="show-date">${show.date}</span>
+                        <div class="show-venue">${show.venue}</div>
+                        <div class="show-location">${show.location}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading shows:', error);
+            }
+        }
+
+        loadShows();
+    </script>
 </body>
 </html>
