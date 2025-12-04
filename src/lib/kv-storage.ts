@@ -46,8 +46,10 @@ export async function initializeRedis() {
     for (const key of keys) {
       try {
         const data = await client.get(key)
-        if (data === '[object Object]' || (typeof data === 'object' && data !== null)) {
-          console.log(`Clearing corrupted data for key: ${key}`)
+        // Only clear data if it's the problematic '[object Object]' string
+        // Allow normal objects (auto-deserialized JSON) to remain
+        if (data === '[object Object]') {
+          console.log(`Clearing corrupted '[object Object]' data for key: ${key}`)
           await client.del(key)
         }
       } catch (error) {
@@ -60,7 +62,7 @@ export async function initializeRedis() {
     if (!existingSettings) {
       // Initialize with default settings
       const defaultSettings = getSiteSettings()
-      await client.set(SETTINGS_KEY, JSON.stringify(defaultSettings))
+      await client.set(SETTINGS_KEY, defaultSettings)
     }
 
     // Check if music samples already exist in Redis
@@ -70,17 +72,17 @@ export async function initializeRedis() {
       const musicSamplesPath = path.join(process.cwd(), 'content/music-samples.json')
       if (fs.existsSync(musicSamplesPath)) {
         const musicSamplesData = JSON.parse(fs.readFileSync(musicSamplesPath, 'utf8'))
-        await client.set(MUSIC_SAMPLES_KEY, JSON.stringify(musicSamplesData))
+        await client.set(MUSIC_SAMPLES_KEY, musicSamplesData)
       } else {
         // Initialize with empty samples
-        await client.set(MUSIC_SAMPLES_KEY, JSON.stringify({ samples: [] }))
+        await client.set(MUSIC_SAMPLES_KEY, { samples: [] })
       }
     }
 
     // Initialize shows data
     const existingShows = await client.get(SHOWS_KEY)
     if (!existingShows) {
-      await client.set(SHOWS_KEY, JSON.stringify([]))
+      await client.set(SHOWS_KEY, [])
     }
   } catch (error) {
     console.log('Redis initialization skipped:', error instanceof Error ? error.message : String(error))
@@ -101,13 +103,26 @@ export async function getSettingsFromRedis() {
   try {
     const settings = await client.get(SETTINGS_KEY)
     if (settings) {
-      // If data is corrupted, clear it and return defaults
-      if (settings === '[object Object]' || typeof settings === 'object') {
-        console.log('Corrupted settings data detected, clearing...')
-        await client.del(SETTINGS_KEY)
-        return getSiteSettings()
+      console.log('Raw settings data from Redis:', typeof settings)
+
+      // If it's already an object (Upstash auto-deserialized), return it directly
+      if (typeof settings === 'object' && settings !== null) {
+        return settings
       }
-      return JSON.parse(settings as string)
+      // If it's a string, try to parse it
+      if (typeof settings === 'string') {
+        try {
+          return JSON.parse(settings)
+        } catch (error) {
+          console.log('Failed to parse settings string, clearing corrupted data')
+          await client.del(SETTINGS_KEY)
+          return getSiteSettings()
+        }
+      }
+      // If it's something else, clear it
+      console.log('Unexpected settings data type, clearing...')
+      await client.del(SETTINGS_KEY)
+      return getSiteSettings()
     }
     return getSiteSettings()
   } catch (error) {
@@ -145,11 +160,10 @@ export async function saveSettingsToRedis(settings: any) {
       throw new Error('Settings must be a valid object')
     }
 
-    const jsonString = JSON.stringify(settings)
     console.log('Saving settings to Redis with key:', SETTINGS_KEY)
-    console.log('JSON string to save:', jsonString.substring(0, 200) + '...')
 
-    await client.set(SETTINGS_KEY, jsonString)
+    // Store the settings directly as an object - let Upstash handle JSON serialization
+    await client.set(SETTINGS_KEY, settings)
     console.log('Settings saved successfully to Redis')
   } catch (error) {
     console.error('Error saving settings to Redis:', error)
@@ -177,15 +191,27 @@ export async function getMusicSamplesFromRedis() {
   try {
     const data = await client.get(MUSIC_SAMPLES_KEY)
     if (data) {
-      console.log('Raw data from Redis:', typeof data, data)
-      // If data is corrupted, clear it and return empty
-      if (data === '[object Object]' || typeof data === 'object') {
-        console.log('Corrupted data detected, clearing...')
-        await client.del(MUSIC_SAMPLES_KEY)
-        return []
+      console.log('Raw music samples data from Redis:', typeof data, typeof data === 'object' ? (data.samples ? `Object with ${data.samples.length} samples` : 'Object (structure unknown)') : data)
+
+      // If it's already an object (Upstash auto-deserialized), return the samples
+      if (typeof data === 'object' && data.samples && Array.isArray(data.samples)) {
+        return data.samples
       }
-      const parsed = JSON.parse(data as string)
-      return parsed.samples || []
+      // If it's a string, try to parse it
+      if (typeof data === 'string') {
+        try {
+          const parsed = JSON.parse(data)
+          return parsed.samples || []
+        } catch (error) {
+          console.log('Failed to parse music samples string, clearing corrupted data')
+          await client.del(MUSIC_SAMPLES_KEY)
+          return []
+        }
+      }
+      // If it's something else, clear it
+      console.log('Unexpected music samples data type, clearing...')
+      await client.del(MUSIC_SAMPLES_KEY)
+      return []
     }
     return []
   } catch (error) {
@@ -225,11 +251,10 @@ export async function saveMusicSamplesToRedis(samples: any[]) {
       throw new Error('Music samples data must be an object with samples array')
     }
 
-    const jsonString = JSON.stringify(data)
     console.log('Saving music samples to Redis:', data.samples.length, 'samples')
-    console.log('JSON string to save:', jsonString.substring(0, 200) + '...')
 
-    await client.set(MUSIC_SAMPLES_KEY, jsonString)
+    // Store the data directly as an object - let Upstash handle JSON serialization
+    await client.set(MUSIC_SAMPLES_KEY, data)
     console.log('Music samples saved successfully to Redis')
   } catch (error) {
     console.error('Error saving music samples to Redis:', error)
@@ -253,15 +278,27 @@ export async function getShowsFromRedis() {
   try {
     console.log('Getting shows from Redis with key:', SHOWS_KEY)
     const shows = await client.get(SHOWS_KEY)
-    console.log('Raw shows data from Redis:', typeof shows, shows)
+    console.log('Raw shows data from Redis:', typeof shows, Array.isArray(shows) ? `Array with ${shows.length} items` : shows)
+
     if (shows) {
-      // If data is corrupted, clear it and return empty
-      if (shows === '[object Object]' || typeof shows === 'object') {
-        console.log('Corrupted shows data detected, clearing...')
-        await client.del(SHOWS_KEY)
-        return []
+      // If it's already an array (Upstash auto-deserialized), return it directly
+      if (Array.isArray(shows)) {
+        return shows
       }
-      return JSON.parse(shows as string)
+      // If it's a string, try to parse it
+      if (typeof shows === 'string') {
+        try {
+          return JSON.parse(shows)
+        } catch (error) {
+          console.log('Failed to parse shows string, clearing corrupted data')
+          await client.del(SHOWS_KEY)
+          return []
+        }
+      }
+      // If it's something else, clear it
+      console.log('Unexpected shows data type, clearing...')
+      await client.del(SHOWS_KEY)
+      return []
     }
     return []
   } catch (error) {
@@ -293,16 +330,11 @@ export async function saveShowsToRedis(shows: any[]) {
       throw new Error('Shows data must be an array')
     }
 
-    const jsonString = JSON.stringify(shows)
     console.log('Saving shows to Redis:', shows.length, 'shows with key:', SHOWS_KEY)
-    console.log('JSON string to save:', jsonString.substring(0, 200) + '...')
 
-    await client.set(SHOWS_KEY, jsonString)
+    // Store the shows directly as an object - let Upstash handle JSON serialization
+    await client.set(SHOWS_KEY, shows)
     console.log('Shows saved successfully to Redis')
-
-    // Verify the save by immediately reading it back
-    const verification = await client.get(SHOWS_KEY)
-    console.log('Verification read:', typeof verification, verification ? 'Data exists' : 'No data')
   } catch (error) {
     console.error('Error saving shows to Redis:', error)
     throw error
